@@ -73,7 +73,7 @@ public class ControladorCliente {
             try {
                 String mensajeRecibido;
 
-                // ESTE BUCLE ESPERA MENSAJES DEL SERVIDOR ININTERRUMPIDAMENTE
+                // ESTE BUCLE ESPERA MENSAJES DEL SERVIDOR DE FORMA ININTERRUMPIDA
                 while ((mensajeRecibido = entrada.readLine()) != null) {
                     Text mensajeFinal = new Text(mensajeRecibido);
 
