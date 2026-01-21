@@ -28,46 +28,19 @@ public class ControladorCliente {
     private Socket socket;
     private BufferedReader entrada;
     private PrintWriter salida;
-    private String mensajeUsuario;
+    private String nombreUsuario;
 
 
-    public void initialize(String nombreUsuario) {
-        spVentanaChat.setVvalue(1.0); // Auto-scroll hacia abajo
+    public void initialize(String usuario) {
+        nombreUsuario = usuario;
         // ESTABLECEMOS CONEXIÓN CON EL SERVIDOR
         conexionServidor();
 
-        // NADA MÁS CONECTAR ENVIAMOS NOMBRE A SERVIDOR
+        // NADA MÁS CONECTAR ENVIAMOS NOMBRE A SERVIDOR/MANEJADOR
         salida.println(nombreUsuario);
 
         // INICIAMOS HILO QUE ESCUCHA CONSTANTEMENTE
-        iniciarHiloEscucha();
-    }
-
-    public void iniciarHiloEscucha() {
-        Thread hiloEscucha = new Thread(() -> {
-            try {
-                String mensajeRecibido;
-                // Este bucle se queda esperando mensajes del servidor continuamente
-                while ((mensajeRecibido = entrada.readLine()) != null) {
-                    final String mensajeFinal = mensajeRecibido;
-                    // Actualizamos la UI de forma segura
-                    javafx.application.Platform.runLater(() -> {
-                        vbVentanaChat.getChildren().add(new Text(mensajeFinal));
-                    });
-                }
-            } catch (IOException e) {
-                System.err.println("Conexión perdida con el servidor.");
-            }
-        });
-        hiloEscucha.setDaemon(true); // Se cierra automáticamente al cerrar la App
-        hiloEscucha.start();
-    }
-
-    public void mensajePulsarEnter(KeyEvent ke) {
-        if (ke.getCode().equals(KeyCode.ENTER) && !tfVentanaMensaje.getText().isEmpty()) {
-            mensajeUsuario = tfVentanaMensaje.getText();
-            comunicacionServidor(mensajeUsuario);
-        }
+        iniciarEscuchaServidor();
     }
 
     private void conexionServidor() {
@@ -84,27 +57,50 @@ public class ControladorCliente {
         }
     }
 
-    private void comunicacionServidor(String mensaje) {
-        // Enviar el mensaje puede ser rápido, pero leer la respuesta es lento
-        salida.println(mensaje);
-        tfVentanaMensaje.setText("");
+    public void mensajePulsarEnter(KeyEvent ke) {
+        if (ke.getCode().equals(KeyCode.ENTER) && !tfVentanaMensaje.getText().isEmpty()) {
+            // OBTENEMOS LO ESCRITO EN EL TextField
+            String mensajeUsuario = tfVentanaMensaje.getText();
+            // MANDAMOS MENSAJE A SERVIDOR/MANEJADOR
+            salida.println(mensajeUsuario);
+            // LIMPIAMOS TextField PARA UNA ESCRITURA FLUIDA CON EL TECLADO
+            tfVentanaMensaje.setText("");
+        }
+    }
 
-        // Creamos un hilo para esperar la respuesta sin congelar la ventana
-        new Thread(() -> {
+    public void iniciarEscuchaServidor() {
+        Thread hiloEscucha = new Thread(() -> {
             try {
-                String respuesta = entrada.readLine();
-                if (respuesta != null) {
-                    // Para modificar la interfaz desde otro hilo, usamos Platform.runLater
+                String mensajeRecibido;
+
+                // ESTE BUCLE ESPERA MENSAJES DEL SERVIDOR ININTERRUMPIDAMENTE
+                while ((mensajeRecibido = entrada.readLine()) != null) {
+                    Text mensajeFinal = new Text(mensajeRecibido);
+
+                    // APLICAMOS ESTILO AL TEXTO QUE SE MOSTRARÁ EN PANTALLA
+                    if (mensajeRecibido.contains("[" + nombreUsuario + "]")) {
+                        mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-fill: DarkSlateBlue;");
+                    } else {
+                        mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-font-style: italic; -fx-fill: DimGrey;");
+                    }
+
+                    // ACTUALIZAMOS LA VISTA DE FORMA SEGURA
                     javafx.application.Platform.runLater(() -> {
-                        Text texto = new Text(respuesta);
-                        vbVentanaChat.getChildren().add(texto);
+                        vbVentanaChat.getChildren().add(mensajeFinal);
+                        // FORZAMOS LAYOUT PARA QUE EL ScrollPane FUNCIONE CORRECTAMENTE
+                        vbVentanaChat.layout();
+                        spVentanaChat.setVvalue(1.0);
                     });
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Conexión perdida con el servidor.");
             }
-        }).start();
+        });
+
+        // EL HILO TERMINARÁ AL CERRAR LA APLICACIÓN
+        hiloEscucha.setDaemon(true);
+        hiloEscucha.start();
     }
 
 }

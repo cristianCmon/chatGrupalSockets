@@ -21,6 +21,7 @@ public class ManejadorClienteMultihilo implements Runnable {
     private final Socket socket;
     // Identificador simple del cliente (usado solo para logs/amigabilidad)
     private final int numeroCliente;
+    // NOMBRE DEL USUARIO QUE SE MOSTRARÁ EN EL CHAT
     private String nombreUsuario;
 
     /**
@@ -31,7 +32,8 @@ public class ManejadorClienteMultihilo implements Runnable {
     public ManejadorClienteMultihilo(Socket socket, int numeroCliente) {
         this.socket = socket;
         this.numeroCliente = numeroCliente;
-        this.nombreUsuario = "Cliente #" + numeroCliente; // Nombre provisional
+        // NOMBRE PROVISIONAL POR SI HAY ALGÚN PROBLEMA EN ControladorConfigCliente
+        this.nombreUsuario = "Cliente #" + numeroCliente;
     }
     /**
      * Punto de entrada del hilo: gestiona la comunicación con el cliente.
@@ -53,24 +55,20 @@ public class ManejadorClienteMultihilo implements Runnable {
             PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
         ) {
 
-            // RECIBIMOS NOMBRE DESDE INITIALIZE() DE CLIENTE
+            // RECIBIMOS NOMBRE DESDE INITIALIZE() DE CLIENTE AL INICIAR ControladorCliente
             this.nombreUsuario = entrada.readLine();
 
             // AL CONECTAR, AÑADIMOS ESTE CLIENTE A LA LISTA GLOBAL
             EchoServerMultihilo.listaUsuarios.add(salida);
 
+            String mensajeCliente;
 
-//            broadcast("📢 " + nombreUsuario + " se ha unido al chat.");
-
-
-            String mensaje;
-
-            // Bucle de lectura: procesa cada línea enviada por el cliente
-            while ((mensaje = entrada.readLine()) != null) {
-                String formatoMensaje = "[" + this.nombreUsuario + "] " + mensaje;
-                // DIFUSIÓN (BROADCAST): Enviamos el mensaje a TODOS los conectados
+            // ESTE BUCLE PROCESA CADA STRING ENVIADO POR EL CLIENTE
+            while ((mensajeCliente = entrada.readLine()) != null) {
+                String mensajeFormateado = "[" + this.nombreUsuario + "] " + mensajeCliente;
+                // DIFUSIÓN TOTAL: SE ENVÍA EL MENSAJE A TODOS LOS CLIENTES CONECTADOS
                 for (PrintWriter pw : EchoServerMultihilo.listaUsuarios) {
-                    pw.println(formatoMensaje);
+                    pw.println(mensajeFormateado);
                 }
             }
 
@@ -91,4 +89,5 @@ public class ManejadorClienteMultihilo implements Runnable {
             }
         }
     }
+
 }

@@ -16,7 +16,7 @@ public class EchoServerMultihilo {
     // Si hay más clientes, esperan en cola hasta que se libere un hilo
     private static final int MAX_CLIENTES = 10;
 
-    // Necesitamos una lista global de todos los flujos de salida (PrintWriter) para poder enviar mensajes a todos.
+    // LISTA GLOBAL DE TODOS LOS FLUJOS DE SALIDA (PrintWriter) PARA PODER ENVIAR MENSAJES A TODOS LOS CLIENTES
     public static List<PrintWriter> listaUsuarios = new CopyOnWriteArrayList<>();
 
     // AtomicInteger: Variable thread-safe para contar clientes sin sincronización explícita
