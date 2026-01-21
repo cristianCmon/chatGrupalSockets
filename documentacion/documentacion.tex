@@ -1,0 +1,134 @@
+% [Tamaño principal de la fuente del documento, tamaño del papel, con título (crea salto de página)]{Tipo de documento}
+\documentclass[12pt, a4paper, titlepage]{article}
+\usepackage[utf8]{inputenc}
+% Traduce expresiones al español
+\usepackage[spanish]{babel}
+\usepackage{setspace}
+
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\graphicspath{ {./imagenes/} }
+
+% Permite utilizar labeling para listar de forma personalizada
+\usepackage{scrextend}
+% Permite centrar verticalmente m{}
+\usepackage{array}
+
+\title{\LARGE \textbf{Documentación de Carrera de coches con Synchronized} \\[2ex] \Large Programación de Servicios y Procesos}
+\author{\\[20ex]Cristian Fernández}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\doublespacing
+\tableofcontents % Índice
+\newpage
+
+\section{Descripción del problema}
+\noindent \\El docente encargado de impartir el módulo de \textit{Programación de Servicios y Procesos}, Don Roberto Castro Liste,
+ha encargado la realización de una tarea que consiste en crear un programa en \textbf{JavaFX} que simule una carrera de coches,
+creando una clase que represente a los participantes de la misma, y utilizar un método \textbf{Synchronized} para evitar posibles \textit{Race Conditions} entre hilos. \\ \\
+El programa debe seguir estas pautas:\\
+\begin{itemize}
+    \item Diseñar una interfaz que exprese de forma clara el funcionamiento de los hilos.
+    \item Crear una clase ParticipanteCarrera que contenga al menos una propiedad Rectangulo, que representará visualmente el coche.
+    \item Crear varios objetos participante en la clase principal e iniciarlos como hilos independientes.
+    \item Simular el desplazamiento de los vehículos y su correcto paso por meta en un método synchronized.
+    \item El programa debe continuar su hasta que todos los coches crucen la línea de meta y se observen las posiciones de llegada de los participantes.
+\end{itemize}
+\newpage
+
+\section{Requisitos funcionales}
+\noindent \\A continuación se listan los requisitos funcionales del sistema:\\
+%\begin{description} sería equivalente pero items en negrita por defecto
+\begin{labeling}{ RF-5:} % el segundo parámetro marca el espaciado entre ítem y texto
+    \item[ \textbf{ RF-1}:] Ver una aviso que informa de una mejora de experiencia si hay sonido.
+    \item[ \textbf{ RF-2}:] Pulsar un botón que inicie la ejecución del programa.
+    \item[ \textbf{ RF-3}:] Mostrar dinámicamente todo el proceso de ejecución de la carrera.
+\end{labeling}
+\newpage
+
+\section{Requisitos no funcionales}
+\noindent \\A continuación se listan los requisitos NO funcionales del sistema:\\
+\begin{labeling}{ RNF-5:}
+    \item[ \textbf{RNF-1}:] El tiempo de respuesta al pulsar el botón Iniciar no debe superar los 2 segundos.
+    \item[ \textbf{RNF-2}:] La intefaz gráfica de usuario ha de ser fácilmente entendible.
+    \item[ \textbf{RNF-3}:] El sonido debe reproducirse de forma fluida y sin cortes.
+    \item[ \textbf{RNF-4}:] Cada acción realizada por los hilos debe ser lo suficientemente descriptiva para el usuario.
+    \item[ \textbf{RNF-5}:] La interfaz debe avisar de forma clara que la ejecución de la aplicación ha terminado.
+\end{labeling}
+\newpage
+
+\section{Casos de uso}
+\noindent \\A continuación se muestran los casos de uso mediante la siguiente tabla:\\ \\ \\
+\begin{tabular}{| m{5cm} | m{8cm} |} % | pinta las columnas verticales
+\hline % pinta las filas horizontales
+\textbf{Caso de uso} & \textbf{Descripción} \\
+\hline
+Leer recomendación & El usuario entiende que la experiencia con la aplicación mejora con sonido activado. \\
+\hline
+Iniciar aplicación & El usuario puede iniciar la aplicación pulsando un botón. \\
+\hline
+\end{tabular}
+\newpage
+
+\section{Historias de usuario}
+\noindent \\A continuación se muestran las historias de usuario mediante la siguiente tabla:\\ \\ \\
+\begin{tabular}{| m{2cm} | m{2cm} | m{4cm} | m{4cm} |}
+\hline
+\textbf{ID} & \textbf{Como...} & \textbf{Quiero...} & \textbf{Para...} \\
+\hline
+HU-01 & Usuario & Pulsar un botón & Iniciar la aplicación \\
+\hline
+HU-02 & Usuario & Contemplar una carrera de coches & Divertirme y entender la sincronía \\
+\hline
+\end{tabular}
+\newpage
+
+\section{Herramientas de desarrollo}
+\noindent \\\textbf{IntelliJ Community Edition} es un IDE gratuito y de código abierto, ideal para el desarrollo en lenguajes JVM y Android.
+Sus características principales incluyen un potente editor de código con autocompletado inteligente y refactorización, soporte para control de versiones,
+un depurador integrado, y herramientas de pruebas unitarias. Está disponible para todas las plataformas.  \\
+\\Características principales: \\
+\begin{itemize}
+    \item \textbf{Editor de código potente:} Ofrece resaltado de sintaxis, análisis en tiempo real, sugerencias de código, e inspecciones y correcciones rápidas.
+    \item \textbf{Soporte para múltiples lenguajes:} Es compatible con Java, Kotlin, Groovy, Scala, y otros lenguajes JVM.
+    \item \textbf{Integración con control de versiones:} Permite la integración con sistemas como Git, SVN, y Mercurial.
+\end{itemize}
+\newpage
+
+\section{Lenguajes de programación}
+\noindent \\\textbf{JavaFX} se caracteriza por su capacidad de crear aplicaciones enriquecidas visualmente, integrando multimedia (audio, video) y gráficos vectoriales.
+Permite desarrollar aplicaciones multiplataforma (escritorio, web, móvil, smart TV). Otras características clave son
+la integración fluida con el ecosistema Java y herramientas como FXML y Scene Builder para un desarrollo más eficiente y colaborativo. \\
+\\Características principales: \\
+\begin{itemize}
+    \item \textbf{Interfaces gráficas de usuario (GUI) enriquecidas:} Permite crear interfaces modernas y atractivas con animaciones, gráficos vectoriales, y elementos personalizables.
+    \item \textbf{Integración multimedia:} Facilita la inclusión de contenido de audio, video y otros medios dentro de las aplicaciones.
+    \item \textbf{Desarrollo declarativo (FXML):} Utiliza FXML, un lenguaje basado en XML, para describir la interfaz de usuario, lo que facilita el trabajo colaborativo entre diseñadores y desarrolladores.
+\end{itemize}
+\newpage
+
+\section{Interfaz de la aplicación}
+\noindent \\A continuación unas capturas de las diferentes vistas de la interfaz.\\
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Screenshot_1.png}
+    \caption{Vista inicial, muestra advertencia/consejo al usuario}
+\end{figure}
+\newpage
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{Screenshot_2.png}
+    \caption{Inicio de ejecución del programa}
+\end{figure}
+\noindent \\
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{Screenshot_3.png}
+    \caption{Fin de ejecución del programa}
+\end{figure}
+
+\end{document}
