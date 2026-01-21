@@ -8,16 +8,16 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \geometry{margin=2.5cm}
-\graphicspath{ {./imagenes/} }
+\graphicspath{ {./capturas/} }
 
 % Permite utilizar labeling para listar de forma personalizada
 \usepackage{scrextend}
 % Permite centrar verticalmente m{}
 \usepackage{array}
 
-\title{\LARGE \textbf{Documentación de Carrera de coches con Synchronized} \\[2ex] \Large Programación de Servicios y Procesos}
+\title{\LARGE \textbf{Chat Grupal} \\[2ex] \Large Programación de Servicios y Procesos}
 \author{\\[20ex]Cristian Fernández}
-\date{\today}
+\date{21 de enero de 2026}
 
 \begin{document}
 \maketitle
@@ -28,15 +28,15 @@
 
 \section{Descripción del problema}
 \noindent \\El docente encargado de impartir el módulo de \textit{Programación de Servicios y Procesos}, Don Roberto Castro Liste,
-ha encargado la realización de una tarea que consiste en crear un programa en \textbf{JavaFX} que simule una carrera de coches,
-creando una clase que represente a los participantes de la misma, y utilizar un método \textbf{Synchronized} para evitar posibles \textit{Race Conditions} entre hilos. \\ \\
+ha encargado la realización de una tarea que consiste en crear un aplicación en \textbf{JavaFX} que permita chatear entre usuarios,
+demostrando la comprensión y el dominio en el uso de sockets y también en el uso de hilos con la utilización de métodos como \textit{newFixedThreadPool()} 
+de la clase \textit{ExecutorService}. \\ \\
 El programa debe seguir estas pautas:\\
 \begin{itemize}
-    \item Diseñar una interfaz que exprese de forma clara el funcionamiento de los hilos.
-    \item Crear una clase ParticipanteCarrera que contenga al menos una propiedad Rectangulo, que representará visualmente el coche.
-    \item Crear varios objetos participante en la clase principal e iniciarlos como hilos independientes.
-    \item Simular el desplazamiento de los vehículos y su correcto paso por meta en un método synchronized.
-    \item El programa debe continuar su hasta que todos los coches crucen la línea de meta y se observen las posiciones de llegada de los participantes.
+    \item Crear una clase servidor que esté escuchando constantemente conexiones entrantes.
+    \item Crear una clase cliente que permita enviar y recibir mensajes del servidor.
+    \item Crear una clase manejadora que comunique correctamente las 2 clases anteriores.
+    \item Diseñar una interfaz que permita ver de forma clara el funcionamiento del chat.
 \end{itemize}
 \newpage
 
@@ -44,20 +44,21 @@ El programa debe seguir estas pautas:\\
 \noindent \\A continuación se listan los requisitos funcionales del sistema:\\
 %\begin{description} sería equivalente pero items en negrita por defecto
 \begin{labeling}{ RF-5:} % el segundo parámetro marca el espaciado entre ítem y texto
-    \item[ \textbf{ RF-1}:] Ver una aviso que informa de una mejora de experiencia si hay sonido.
-    \item[ \textbf{ RF-2}:] Pulsar un botón que inicie la ejecución del programa.
-    \item[ \textbf{ RF-3}:] Mostrar dinámicamente todo el proceso de ejecución de la carrera.
+    \item[ \textbf{ RF-1}:] Solicitar al usuario que introduzca su nombre antes de entrar en el chat.
+    \item[ \textbf{ RF-2}:] Pulsar un botón que inicie la ejecución del programa en una nueva ventana.
+    \item[ \textbf{ RF-3}:] Permitir la inserción de mensajes de forma ágil únicamente usando el teclado.
+    \item[ \textbf{ RF-4}:] Mostrar correctamente y en tiempo real todos los mensajes de todos los participantes en el chat.
+    \item[ \textbf{ RF-5}:] Terminar los hilos en ejecución cuando se cierre la aplicación Cliente.
 \end{labeling}
 \newpage
 
 \section{Requisitos no funcionales}
 \noindent \\A continuación se listan los requisitos NO funcionales del sistema:\\
 \begin{labeling}{ RNF-5:}
-    \item[ \textbf{RNF-1}:] El tiempo de respuesta al pulsar el botón Iniciar no debe superar los 2 segundos.
+    \item[ \textbf{RNF-1}:] El tiempo de respuesta al pulsar el botón \textit{Entrar Chat} no debe superar los 2 segundos.
     \item[ \textbf{RNF-2}:] La intefaz gráfica de usuario ha de ser fácilmente entendible.
-    \item[ \textbf{RNF-3}:] El sonido debe reproducirse de forma fluida y sin cortes.
-    \item[ \textbf{RNF-4}:] Cada acción realizada por los hilos debe ser lo suficientemente descriptiva para el usuario.
-    \item[ \textbf{RNF-5}:] La interfaz debe avisar de forma clara que la ejecución de la aplicación ha terminado.
+    \item[ \textbf{RNF-3}:] El tiempo de respuesta al mandar un mensaje pulsando Enter no debe superar el segundo.
+    \item[ \textbf{RNF-4}:] El usuario debe distinguir fácilmente sus mensajes del resto de mensajes de los demás usuarios.
 \end{labeling}
 \newpage
 
@@ -67,9 +68,13 @@ El programa debe seguir estas pautas:\\
 \hline % pinta las filas horizontales
 \textbf{Caso de uso} & \textbf{Descripción} \\
 \hline
-Leer recomendación & El usuario entiende que la experiencia con la aplicación mejora con sonido activado. \\
+Introducir nombre & El usuario debe introducir su nombre antes de entrar en el chat. \\
 \hline
-Iniciar aplicación & El usuario puede iniciar la aplicación pulsando un botón. \\
+Iniciar aplicación & El usuario puede iniciar la ventana de chat pulsando un botón. \\
+\hline
+Escribir mensaje & El usuario puede enviar un mensaje escribiendo y pulsando Enter. \\
+\hline
+Cerrar aplicación & El usuario puede cerrar la aplicación por completo pulsando el botón de cerrar ventana. \\
 \hline
 \end{tabular}
 \newpage
@@ -80,9 +85,13 @@ Iniciar aplicación & El usuario puede iniciar la aplicación pulsando un botón
 \hline
 \textbf{ID} & \textbf{Como...} & \textbf{Quiero...} & \textbf{Para...} \\
 \hline
-HU-01 & Usuario & Pulsar un botón & Iniciar la aplicación \\
+HU-01 & Usuario & Insertar mi nombre & Que me identifiquen en el chat \\
 \hline
-HU-02 & Usuario & Contemplar una carrera de coches & Divertirme y entender la sincronía \\
+HU-02 & Usuario & Pulsar un botón & Iniciar la aplicación \\
+\hline
+HU-03 & Usuario & Manejar el chat únicamente con el teclado & Disfrutar de una buena usabilidad \\
+\hline
+HU-04 & Usuario & Ver los nombres de los participantes & Saber en todo momento con quién hablo \\
 \hline
 \end{tabular}
 \newpage
@@ -112,23 +121,25 @@ la integración fluida con el ecosistema Java y herramientas como FXML y Scene B
 \newpage
 
 \section{Interfaz de la aplicación}
-\noindent \\A continuación unas capturas de las diferentes vistas de la interfaz.\\
+\noindent \\A continuación unas capturas de las diferentes vistas de la interfaz.\\ \\
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.8\textwidth]{Screenshot_1.png}
-    \caption{Vista inicial, muestra advertencia/consejo al usuario}
+    \includegraphics[width=0.5\textwidth]{01.png}
+    \caption{Vista inicial, requiere introducir nombre usuario para continuar}
+\end{figure}
+\noindent \\ \\
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{02.png}
+    \caption{Si el campo está vacío se muestra un placeholder en el interior del TextField}
 \end{figure}
 \newpage
-\begin{figure}[hbt!]
-    \centering
-    \includegraphics[width=1\textwidth]{Screenshot_2.png}
-    \caption{Inicio de ejecución del programa}
-\end{figure}
+
 \noindent \\
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=1\textwidth]{Screenshot_3.png}
-    \caption{Fin de ejecución del programa}
+    \includegraphics[width=1\textwidth]{03.png}
+    \caption{Los textos en color son los del usuario, en cursiva los de los demás}
 \end{figure}
 
 \end{document}
