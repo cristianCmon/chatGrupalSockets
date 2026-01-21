@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="480.0" prefWidth="640.0" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/24.0.1" fx:controller="com.chatgrupalsockets.ControladorCliente">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+   <children>
+      <ScrollPane fx:id="spVentanaChat" focusTraversable="false" prefHeight="362.0" prefWidth="600.0">
+         <content>
+            <VBox fx:id="vbVentanaChat" prefHeight="360.0" prefWidth="598.0" />
+         </content>
+      </ScrollPane>
+      <TextField fx:id="tfVentanaMensaje" alignment="CENTER_RIGHT" onKeyPressed="#mensajePulsarEnter" />
+   </children>
+</VBox>
