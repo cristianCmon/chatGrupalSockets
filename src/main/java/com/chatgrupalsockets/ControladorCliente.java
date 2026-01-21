@@ -1,14 +1,10 @@
 package com.chatgrupalsockets;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -18,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class ControladorCliente {
     @FXML
@@ -33,8 +28,6 @@ public class ControladorCliente {
     private Socket socket;
     private BufferedReader entrada;
     private PrintWriter salida;
-    private Scanner scanner;
-
     private String mensajeUsuario;
 
 
@@ -69,8 +62,6 @@ public class ControladorCliente {
         hiloEscucha.setDaemon(true); // Se cierra automáticamente al cerrar la App
         hiloEscucha.start();
     }
-
-
 
     public void mensajePulsarEnter(KeyEvent ke) {
         if (ke.getCode().equals(KeyCode.ENTER) && !tfVentanaMensaje.getText().isEmpty()) {
@@ -115,10 +106,5 @@ public class ControladorCliente {
             }
         }).start();
     }
-
-    public static void recibirMensaje(String mensaje) {
-
-    }
-
 
 }
