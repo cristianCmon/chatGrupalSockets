@@ -29,15 +29,22 @@ public class ControladorCliente {
     private BufferedReader entrada;
     private PrintWriter salida;
     private String nombreUsuario;
+    private String nombreChat;
 
 
-    public void initialize(String usuario) {
+    public void initialize(String usuario, String chat) {
         nombreUsuario = usuario;
+        nombreChat = chat;
         // ESTABLECEMOS CONEXIÓN CON EL SERVIDOR
         conexionServidor();
 
         // NADA MÁS CONECTAR ENVIAMOS NOMBRE A SERVIDOR/MANEJADOR
         salida.println(nombreUsuario);
+
+        // NADA MÁS CONECTAR ENVIAMOS nombreChat A SERVIDOR/MANEJADOR
+        salida.println(nombreChat);
+
+        System.out.println(this.nombreUsuario + " - " + this.nombreChat);
 
         // INICIAMOS HILO QUE ESCUCHA CONSTANTEMENTE
         iniciarEscuchaServidor();

@@ -30,7 +30,7 @@ public class ControladorConfigCliente {
 
                 // Pasamos por parámetro el nombre al controlador Cliente
                 ControladorCliente vistaChat = loader.getController();
-                vistaChat.initialize(nombreUsuario);
+//                vistaChat.initialize(nombreUsuario);
 
                 stage.setTitle("CHAT GRUPAL");
                 stage.setScene(scene);

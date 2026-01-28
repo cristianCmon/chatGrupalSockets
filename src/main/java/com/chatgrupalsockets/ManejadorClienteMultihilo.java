@@ -2,6 +2,8 @@ package com.chatgrupalsockets;
 
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.concurrent.*;
 /**
  * ManejadorClienteMultihilo
@@ -23,6 +25,8 @@ public class ManejadorClienteMultihilo implements Runnable {
     private final int numeroCliente;
     // NOMBRE DEL USUARIO QUE SE MOSTRARÁ EN EL CHAT
     private String nombreUsuario;
+    private String nombreChat;
+    private String hora;
 
     /**
      * Constructor
@@ -34,6 +38,7 @@ public class ManejadorClienteMultihilo implements Runnable {
         this.numeroCliente = numeroCliente;
         // NOMBRE PROVISIONAL POR SI HAY ALGÚN PROBLEMA EN ControladorConfigCliente
         this.nombreUsuario = "Cliente #" + numeroCliente;
+        this.nombreChat = "Chat #" + numeroCliente;
     }
     /**
      * Punto de entrada del hilo: gestiona la comunicación con el cliente.
@@ -57,18 +62,35 @@ public class ManejadorClienteMultihilo implements Runnable {
 
             // RECIBIMOS NOMBRE DESDE INITIALIZE() DE CLIENTE AL INICIAR ControladorCliente
             this.nombreUsuario = entrada.readLine();
-
+            // RECIBIMOS CHAT DESDE INITIALIZE() DE CLIENTE AL INICIAR ControladorCliente
+            this.nombreChat = entrada.readLine();
+            System.out.println(this.nombreUsuario + " - " + this.nombreChat);
             // AL CONECTAR, AÑADIMOS ESTE CLIENTE A LA LISTA GLOBAL
             EchoServerMultihilo.listaUsuarios.add(salida);
+
+            // AL CONECTAR, AÑADIMOS ESTE CHAT A LA LISTA GLOBAL SI NO EXISTE
+            if (!EchoServerMultihilo.listaChats.contains(nombreChat)) {
+                EchoServerMultihilo.listaChats.add(nombreChat);
+            }
+
+            EchoServerMultihilo.listaChatUsuarios.add(new EchoServerMultihilo.ChatUsuario(nombreChat, nombreUsuario));
 
             String mensajeCliente;
 
             // ESTE BUCLE PROCESA CADA STRING ENVIADO POR EL CLIENTE
             while ((mensajeCliente = entrada.readLine()) != null) {
-                String mensajeFormateado = "[" + this.nombreUsuario + "] " + mensajeCliente;
-                // DIFUSIÓN TOTAL: SE ENVÍA EL MENSAJE A TODOS LOS CLIENTES CONECTADOS
+                Date fecha = new Date();
+                hora = fecha.getHours() + ":" + fecha.getMinutes();
+
+                String mensajeFormateado = "(" + hora + ")[" + this.nombreUsuario + "] " + mensajeCliente;
+
+//                 DIFUSIÓN TOTAL: SE ENVÍA EL MENSAJE A TODOS LOS CLIENTES CONECTADOS
                 for (PrintWriter pw : EchoServerMultihilo.listaUsuarios) {
-                    pw.println(mensajeFormateado);
+                    for (EchoServerMultihilo.ChatUsuario chat : EchoServerMultihilo.listaChatUsuarios) {
+                        if (chat.chat.equals(this.nombreChat) && chat.nombre.equals(this.nombreUsuario)) {
+                            pw.println(mensajeFormateado);
+                        }
+                    }
                 }
             }
 
@@ -89,5 +111,7 @@ public class ManejadorClienteMultihilo implements Runnable {
             }
         }
     }
+
+
 
 }

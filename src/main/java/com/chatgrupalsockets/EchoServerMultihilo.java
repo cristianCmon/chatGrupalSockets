@@ -19,6 +19,11 @@ public class EchoServerMultihilo {
     // LISTA GLOBAL DE TODOS LOS FLUJOS DE SALIDA (PrintWriter) PARA PODER ENVIAR MENSAJES A TODOS LOS CLIENTES
     public static List<PrintWriter> listaUsuarios = new CopyOnWriteArrayList<>();
 
+    // LISTA GLOBAL CHATS
+    public static List<String> listaChats = new ArrayList<>();
+    // LISTA USUARIOS CONECTADOS CHAT
+    public static List<ChatUsuario> listaChatUsuarios = new ArrayList<>();
+
     // AtomicInteger: Variable thread-safe para contar clientes sin sincronización explícita
     private static final AtomicInteger clientesConectados = new AtomicInteger(0);
 
@@ -77,6 +82,17 @@ public class EchoServerMultihilo {
             // - Alternativa: shutdownNow() interrumpe inmediatamente todos los hilos
             pool.shutdown();
         }
+    }
+
+    static class ChatUsuario {
+        String chat = "";
+        String nombre = "";
+
+        public ChatUsuario(String chat, String nombre) {
+            this.chat = chat;
+            this.nombre = nombre;
+        }
+
     }
 
 }
