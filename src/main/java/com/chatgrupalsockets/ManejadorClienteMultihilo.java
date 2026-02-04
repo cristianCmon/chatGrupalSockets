@@ -27,6 +27,7 @@ public class ManejadorClienteMultihilo implements Runnable {
     private String nombreUsuario;
     private String nombreChat;
     private String hora;
+    private PrintWriter salida;
 
     /**
      * Constructor
@@ -65,15 +66,18 @@ public class ManejadorClienteMultihilo implements Runnable {
             // RECIBIMOS CHAT DESDE INITIALIZE() DE CLIENTE AL INICIAR ControladorCliente
             this.nombreChat = entrada.readLine();
             System.out.println(this.nombreUsuario + " - " + this.nombreChat);
+            // CREAMOS SALIDA PARA PODER FILTRAR MENSAJES
+            this.salida = salida;
+
             // AL CONECTAR, AÑADIMOS ESTE CLIENTE A LA LISTA GLOBAL
-            EchoServerMultihilo.listaUsuarios.add(salida);
+//            EchoServerMultihilo.listaUsuarios.add(salida);
 
             // AL CONECTAR, AÑADIMOS ESTE CHAT A LA LISTA GLOBAL SI NO EXISTE
             if (!EchoServerMultihilo.listaChats.contains(nombreChat)) {
                 EchoServerMultihilo.listaChats.add(nombreChat);
             }
-
-            EchoServerMultihilo.listaChatUsuarios.add(new EchoServerMultihilo.ChatUsuario(nombreChat, nombreUsuario));
+//            AÑADIMOS SALIDA
+            EchoServerMultihilo.listaChatUsuarios.add(new EchoServerMultihilo.ChatUsuario(nombreChat, nombreUsuario, this.salida));
 
             String mensajeCliente;
 
@@ -82,15 +86,71 @@ public class ManejadorClienteMultihilo implements Runnable {
                 Date fecha = new Date();
                 hora = fecha.getHours() + ":" + fecha.getMinutes();
 
-                String mensajeFormateado = "(" + hora + ")[" + this.nombreUsuario + "] " + mensajeCliente;
+                // FUNCIONALIDAD EXPULSAR USUARIO
+                if (mensajeCliente.startsWith("/kick ") || mensajeCliente.startsWith("/ban ")) {
+                    String[] partes = mensajeCliente.split(" ", 2);
 
-//                 DIFUSIÓN TOTAL: SE ENVÍA EL MENSAJE A TODOS LOS CLIENTES CONECTADOS
-                for (PrintWriter pw : EchoServerMultihilo.listaUsuarios) {
-                    for (EchoServerMultihilo.ChatUsuario chat : EchoServerMultihilo.listaChatUsuarios) {
-                        if (chat.chat.equals(this.nombreChat) && chat.nombre.equals(this.nombreUsuario)) {
-                            pw.println(mensajeFormateado);
+                    if (partes.length == 2) {
+                        // EXTRAEMOS NOMBRE USUARIO
+                        String usuarioObjetivo = partes[1].trim();
+                        boolean expulsado = false;
+
+                        for (EchoServerMultihilo.ChatUsuario u : EchoServerMultihilo.listaChatUsuarios) {
+                            // FILTRAMOS CHAT
+                            if (u.chat.equals(this.nombreChat) && u.nombre.equalsIgnoreCase(usuarioObjetivo)) {
+                                u.salida.println("Has sido expulsado del chat por " + this.nombreUsuario);
+                                // AL CERRAR SU PrintWriter SE CIERRA AUTOMÁTICAMENTE SU CONEXIÓN
+                                u.salida.close();
+                                expulsado = true;
+                                break;
+                            }
+                        }
+                        // SI NO EXISTE EL USUARIO OBJETIVO LO INDICAMOS TAMBIÉN
+                        if (!expulsado) salida.println("No se encontró al usuario '" + usuarioObjetivo + "' en esta sala.");
+                    }
+
+                // FUNCIONALIDAD SUSURRO
+                } else if (mensajeCliente.startsWith("/susurro ") || mensajeCliente.startsWith("/whisp ")) {
+                    String[] partes = mensajeCliente.split(" ", 3);
+
+                    if (partes.length == 3) {
+                        String objetivo = partes[1]; // NOMBRE
+                        String mensajePrivado = partes[2]; // MENSAJE
+                        boolean enviado = false;
+
+                        for (EchoServerMultihilo.ChatUsuario u : EchoServerMultihilo.listaChatUsuarios) {
+                            if (u.chat.equals(this.nombreChat) && u.nombre.equalsIgnoreCase(objetivo)) {
+                                u.salida.println("[Susurro de " + this.nombreUsuario + "]: " + mensajePrivado);
+                                salida.println("[Susurro para " + objetivo + "]: " + mensajePrivado); // Confirmación al emisor
+                                enviado = true;
+                                break;
+                            }
+                        }
+                        if (!enviado) salida.println("Usuario '" + objetivo + "' no encontrado.");
+
+                    }
+
+                // MENSAJE NORMAL
+                } else {
+                    String mensajeFormateado = "(" + hora + ")[" + this.nombreUsuario + "] " + mensajeCliente;
+
+    //                DIFUSIÓN FILTRADA: RECORREMOS LOS USUARIOS REGISTRADOS
+                    for (EchoServerMultihilo.ChatUsuario usuario : EchoServerMultihilo.listaChatUsuarios) {
+    //                    SI EL CHAT DEL USUARIO DE LA LISTA COINCIDE CON EL CHAT DE ESTE MANEJADOR FILTRAMOS SALIDA
+                        if (usuario.chat.equals(this.nombreChat)) {
+                            usuario.salida.println(mensajeFormateado);
                         }
                     }
+
+    //                 DIFUSIÓN TOTAL: SE ENVÍA EL MENSAJE A TODOS LOS CLIENTES CONECTADOS
+    //                for (PrintWriter pw : EchoServerMultihilo.listaUsuarios) {
+    //                    for (EchoServerMultihilo.ChatUsuario chat : EchoServerMultihilo.listaChatUsuarios) {
+    //                        if (chat.chat.equals(this.nombreChat) && chat.nombre.equals(this.nombreUsuario)) {
+    //                            pw.println(mensajeFormateado);
+    //                        }
+    //                    }
+    //                }
+
                 }
             }
 
@@ -101,6 +161,14 @@ public class ManejadorClienteMultihilo implements Runnable {
         } finally {
             // En el finally cerramos el socket para liberar el descriptor de
             // fichero aunque los streams ya hayan sido cerrados arriba.
+
+            for (EchoServerMultihilo.ChatUsuario usuario : EchoServerMultihilo.listaChatUsuarios) {
+                // ANTES DE CERRAR EL SOCKET ELIMINAMOS USUARIO DE LA LISTA (EVITANDO BORRADOS ACCIDENTALES CON NOMBRES IGUALES)
+                if (usuario.chat.equals(this.nombreChat) && (usuario.nombre.equals(this.nombreUsuario)) && usuario.salida == this.salida) {
+                    EchoServerMultihilo.listaChatUsuarios.remove(usuario);
+                    break;
+                }
+            }
             try {
                 socket.close();
                 System.out.println("❌ Cliente #" + numeroCliente + " desconectado");

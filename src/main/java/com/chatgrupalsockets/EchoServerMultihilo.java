@@ -87,10 +87,14 @@ public class EchoServerMultihilo {
     static class ChatUsuario {
         String chat = "";
         String nombre = "";
+//        AÑADIMOS NUEVA PROPIEDAD
+        PrintWriter salida;
 
-        public ChatUsuario(String chat, String nombre) {
+        public ChatUsuario(String chat, String nombre, PrintWriter salida) {
             this.chat = chat;
             this.nombre = nombre;
+//            PARA PODER FILTRAR CHAT POSTERIORMENTE
+            this.salida = salida;
         }
 
     }

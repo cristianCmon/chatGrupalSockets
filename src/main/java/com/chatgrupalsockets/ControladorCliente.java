@@ -85,7 +85,12 @@ public class ControladorCliente {
                     Text mensajeFinal = new Text(mensajeRecibido);
 
                     // APLICAMOS ESTILO AL TEXTO QUE SE MOSTRARÁ EN PANTALLA
-                    if (mensajeRecibido.contains("[" + nombreUsuario + "]")) {
+                    if (mensajeRecibido.contains("Has sido expulsado del chat por") || mensajeRecibido.contains("No se encontró al usuario")) {
+                        mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-fill: red;");
+                    } else if (mensajeRecibido.contains("[Susurro de ") || mensajeRecibido.contains("[Susurro para ")) {
+                        mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-fill: hotpink;");
+
+                    } else if (mensajeRecibido.contains("[" + nombreUsuario + "]")) {
                         mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-fill: DarkSlateBlue;");
                     } else {
                         mensajeFinal.setStyle("-fx-font-family: 'Monaco'; -fx-font-size: 20; -fx-font-style: italic; -fx-fill: DimGrey;");
